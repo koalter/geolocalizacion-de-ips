@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
@@ -9,8 +11,7 @@ app.use(morgan('dev'));
 
 // Routes
 app.get('/getData', (req, res) => {
-    console.log(req.ip);
-    res.send(appService.getData(req.ip));
+    res.send(appService.getData(req.socket.remoteAddress));
 });
 app.get('/getData/:ip', (req, res) => {
     res.send(appService.getData(req.params.ip));
