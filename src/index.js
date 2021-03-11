@@ -10,7 +10,7 @@ app.use(morgan('dev'));
 // Routes
 app.get('/getData', (req, res) => {
     console.log(req.ip);
-    res.send(appService.getData(req.ip));
+    res.send(appService.getData(req.headers['x-forwarded-for']));
 });
 app.get('/getData/:ip', (req, res) => {
     res.send(appService.getData(req.params.ip));
