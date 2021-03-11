@@ -11,7 +11,7 @@ app.use(morgan('dev'));
 
 // Routes
 app.get('/getData', (req, res) => {
-    res.send(appService.getData(req.socket.remoteAddress));
+    res.send(appService.getData(request.headers['x-forwarded-for']));
 });
 app.get('/getData/:ip', (req, res) => {
     res.send(appService.getData(req.params.ip));
