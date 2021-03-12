@@ -1,9 +1,11 @@
+require('dotenv').config()
+
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 3000;
-const appService = require('./services/appService');
+const appController = require('./controllers/appController');
 
 // Database
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
@@ -18,7 +20,11 @@ app.use(morgan('dev'));
 app.get('/getData', (req, res) => {
     const forwarded = req.headers['x-forwarded-for'];
     const ip = forwarded ? forwarded.split(/, /)[0] : req.socket.remoteAddress;
-    res.send(appService.getData(ip));
+    res.send(appController.getData(ip));
+});
+
+app.get('/', (req, res) => {
+    res.send(appController.getDataTest('181.44.61.195'));
 });
 // app.get('/getData/:ip', (req, res) => {
 //     res.send(appService.getData(req.params.ip));

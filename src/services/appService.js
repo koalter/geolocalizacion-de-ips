@@ -1,13 +1,23 @@
 const Ip = require('../models/Ip');
+const axios = require('axios');
 
 class AppService {
-    getData(data) {
-        const ip = new Ip({ address: data });
+    saveIp(ipAddress) {
+        const ip = new Ip({ address: ipAddress });
 
         ip.save(err => {
             if (err) console.error(err);       
         });
-        return { message: `Your requested ip is ${ip.address}` };
+        
+        return ip;
+    }
+
+    getData(ipAddress) {
+        axios.get(`https://api.ip2country.info/ip?${ipAddress}`, { responseType: 'json' })
+            .then(res => {
+                console.log(res.data);
+                return res.data;
+            });
     }
 }
 
