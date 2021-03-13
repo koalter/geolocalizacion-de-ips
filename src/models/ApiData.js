@@ -5,6 +5,7 @@ class ApiData {
     countryISO = '';
     currentDttm = [];
     currency = '';
+    exchangeRate = 0;
     // exchangeRate;
     // distanceToBA;
 
@@ -20,6 +21,15 @@ class ApiData {
                 second: '2-digit'
             }));
         });
+    }
+
+    setExchangeRate(usdRate, localRate) {
+        if (usdRate && localRate) {
+            const adjustedUsdRate = 1 / usdRate;
+            this.exchangeRate = adjustedUsdRate * localRate;
+        } else {
+            this.exchangeRate = null;
+        }
     }
 }
 
