@@ -7,7 +7,7 @@ class ApiData {
     languages = [];
     currentDttm = [];
     currency = '';
-    // distanceToBA;
+    distanceToBA = 0;
     exchangeRate = 0;
 
     setDateTimes(timezones) {
