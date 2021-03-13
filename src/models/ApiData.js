@@ -1,25 +1,33 @@
 const { DateTime } = require('luxon');
 
 class ApiData {
-    countryNm = '';
+    ipAddress = '';
+    countryName = '';
     countryISO = '';
+    languages = [];
     currentDttm = [];
     currency = '';
-    exchangeRate = 0;
-    // exchangeRate;
     // distanceToBA;
+    exchangeRate = 0;
 
     setDateTimes(timezones) {
         timezones.forEach(tz => {
             this.currentDttm.push(DateTime.now().setZone(tz).toLocaleString({ 
-                locale: 'es-AR', 
+                locale: 'en-US', 
                 day: 'numeric', 
                 month: '2-digit', 
                 year: 'numeric', 
                 hour: '2-digit', 
                 minute: '2-digit', 
-                second: '2-digit'
+                second: '2-digit',
+                hour12: true
             }));
+        });
+    }
+
+    setLanguages(languageList) {
+        languageList.forEach(language => {
+            this.languages.push(language.name);
         });
     }
 
