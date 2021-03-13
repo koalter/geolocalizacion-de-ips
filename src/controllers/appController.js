@@ -1,4 +1,3 @@
-const { json } = require('express');
 const appService = require('../services/appService');
 
 class AppController {
