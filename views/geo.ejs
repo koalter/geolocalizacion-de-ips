@@ -1,18 +1,18 @@
 <div class="row mt-5">
-    <div class="col-md-6 m-auto">
-      <div class="card card-body">
-        <h1 class="text-center mb-3">Geolocalizador</h1>
-        <%- include("./message"); %>
-        <form action="/geo" method="POST">
-          <label>Introduzca la dirección IP</label>
-          <div class="form-group d-flex">
-            <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_1" name="section_1" class="form-control m-1" required />
-            <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_2" name="section_2" class="form-control m-1" required />
-            <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_3" name="section_3" class="form-control m-1" required />
-            <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_4" name="section_4" class="form-control m-1" required />
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Submit</button>
-        </form>
-      </div>
+  <div class="col-md-6 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mb-3">Geolocalizador</h1>
+      <%- include("./message"); %>
+      <form action="/geo" method="POST">
+        <label>Introduzca la dirección IP</label>
+        <div class="form-group d-flex">
+          <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_1" name="section_1" class="form-control m-1" required />
+          <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_2" name="section_2" class="form-control m-1" required />
+          <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_3" name="section_3" class="form-control m-1" required />
+          <input type="number" min="0" max="255" onblur="if (this.value > 255) { this.value = 255 } else if (this.value < 0) { this.value = 0 }" id="section_4" name="section_4" class="form-control m-1" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+      </form>
     </div>
   </div>
+</div>

@@ -10,10 +10,9 @@ const apiRouter = require('./routes/api');
 const geoRouter = require('./routes/geo');
 
 // Database
-mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
-    if (err) console.log(err);
-    console.log('Database connected!');
-});
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Database connected...'))
+    .catch(err => console.log(err));
 
 // Middlewares
 app.use(morgan('dev'));
