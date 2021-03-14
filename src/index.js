@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const apiRouter = require('./routes/api');
 const geoRouter = require('./routes/geo');
+const queryRouter = require('./routes/query');
 
 // Database
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.get('/', (req, res) => res.redirect('/geo'));
 app.use('/geo', geoRouter);
+app.use('/queries', queryRouter);
 app.use('/api', apiRouter);
 
 app.listen(port, () => {

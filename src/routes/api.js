@@ -1,56 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch').default;
 const geolib = require('geolib');
-const ApiOutput = require('../models/ApiOutput');
+const apiService = require('../services/apiService');
 const EXCHANGE_RATES = require('../models/exchangeRate-mock.json'); //TODO delete after doing cache
-const IP = '181.44.61.195'; //TODO delete
 
-router.get('/getDataTest/:ip', async (req, res) => {
+router.get('/getData/:ip', async (req, res) => {
     const input = req.params.ip;
 
     if (!validateIp(input)) {
         res.sendStatus(400);
     } else {
-        const ip2CountryOutput = await fetch(`https://api.ip2country.info/ip?${input}`);
-        const { countryCode, countryCode3, countryName, countryEmoji } = await ip2CountryOutput.json();
-        const restCountriesOutput = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}`);
-
-        if (restCountriesOutput.status !== 200) {
-            res.sendStatus(restCountriesOutput.status);
+        const ip2CountryOutput = await apiService.getIpData(input);
+        if (ip2CountryOutput.status !== 200) {
+            res.sendStatus(ip2CountryOutput.status);
         } else {
-            const restCountriesData = await restCountriesOutput.json();
-            // const fixerOutput = await fetch(`http://data.fixer.io/api/latest?access_key=${process.env.FIXIO_API_KEY}&symbols=USD,${restCountriesData[0].currencies[0].code}&format=1`);
-            // const fixerData = await fixerOutput.json();
-            const fixerData = EXCHANGE_RATES;
-        
-            const requestCoordinates = { latitude: restCountriesData.latlng[0], longitude: restCountriesData.latlng[1] };
-            const localCoordinates = { latitude: process.env.LOCAL_LAT, longitude: process.env.LOCAL_LNG};
-        
-            const result = new ApiOutput();
-            result.ipAddress = input;
-            result.countryName = countryName;
-            result.countryISO = countryCode;
-            result.setLanguages(restCountriesData.languages);
-            result.currency = restCountriesData.currencies[0].code;
-            result.setExchangeRate(fixerData.rates['USD'], fixerData.rates[result.currency]);
-            result.setDateTimes(restCountriesData.timezones);
-            result.distanceToBA = geolib.getDistance(requestCoordinates, localCoordinates)/1000;
-        
-            const geolocalizationData = result.export();
-        
-            geolocalizationData.save((err, data) => {
-                if (err) {
-                    res.status(500);
-                } else {
-                    res.status(200);
-                    console.log(data.id);
-                }
-            });
-        
-            res.send(result);
+            const { countryCode, countryCode3, countryName, countryEmoji } = await ip2CountryOutput.json();
+            const restCountriesOutput = await apiService.getCountryData(countryCode);
+            if (restCountriesOutput.status !== 200) {
+                res.sendStatus(restCountriesOutput.status);
+            } else {
+                const restCountriesData = await restCountriesOutput.json();
+                // const fixerOutput = await fetch(`http://data.fixer.io/api/latest?access_key=${process.env.FIXIO_API_KEY}&symbols=USD,${restCountriesData[0].currencies[0].code}&format=1`);
+                // const fixerData = await fixerOutput.json();
+                const fixerData = EXCHANGE_RATES;
+            
+                const requestCoordinates = { latitude: restCountriesData.latlng[0], longitude: restCountriesData.latlng[1] };
+                const localCoordinates = { latitude: process.env.LOCAL_LAT, longitude: process.env.LOCAL_LNG};
+            
+                const { result, status } = await apiService.saveData(input, countryName, countryCode, restCountriesData.languages, restCountriesData.currencies[0].code, fixerData.rates['USD'], fixerData.rates[restCountriesData.currencies[0].code], restCountriesData.timezones, Math.round(geolib.getDistance(requestCoordinates, localCoordinates)/1000));
+
+                res.status(status).send(result);
+            }
         }
     }
+});
+
+router.get('/getLongest', async (req, res) => {
+    const result = await apiService.getLongestDistance();
+    res.send(result);
+});
+
+router.get('/getShortest', async (req, res) => {
+    const result = await apiService.getShortestDistance();
+    res.send(result);
+});
+
+router.get('/getAverage', async (req, res) => {
+    const result = await apiService.getAverageDistance();
 });
 
 function validateIp(input) {

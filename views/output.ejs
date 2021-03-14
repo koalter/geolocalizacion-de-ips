@@ -1,0 +1,57 @@
+<% if (typeof output != 'undefined' && output && status == '200') { %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <% if (output.ipAddress) { %>
+      <div>
+        <label>IP:</label>
+        <%= output.ipAddress %>
+      </div>
+    <% } %>
+    <% if (output.countryName) { %>
+      <div>
+        <label>Country:</label>
+        <%= output.countryName %>
+      </div>
+    <% } %>
+    <% if (output.countryISO) { %>
+      <div>
+        <label>ISO Code:</label>
+        <%= output.countryISO %>
+      </div>
+    <% } %>
+    <% if (output.languages) { %>
+      <div>
+        <label>Languages:</label>
+        <%= output.languages %>
+      </div>
+    <% } %>
+    <% if (output.currentDttm) { %>
+      <div>
+        <label>Current DateTime:</label>
+        <% for (let i = 0; i < output.currentDttm.length; i++) { %>
+          <p><%= output.currentDttm[i] %></p>
+        <% } %>
+      </div>
+    <% } %>
+    <% if (output.currency) { %>
+      <div>
+        <label>Currency:</label>
+        <%= output.currency %> (1 USD = <%= output.exchangeRate.toFixed(2) %> <%= output.currency %>)
+      </div>
+    <% } %>
+    <% if (output.distanceToBA) { %>
+    <div>
+      <label>Estimated distance to BA:</label>
+      <%= output.distanceToBA %> KM
+    </div>
+    <% } %>
+    <% if (output.requests) { %>
+      <div>
+        <label>Requests:</label>
+        <%= output.requests %>
+      </div>
+    <% } %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% } %>
