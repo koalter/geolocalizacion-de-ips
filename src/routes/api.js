@@ -8,6 +8,7 @@ const IP = '181.44.61.195';
 
 router.get('/getDataTest/:ip', async (req, res) => {
     const input = req.params.ip;
+    if (!input) res.sendStatus(400);
     const ip2CountryOutput = await fetch(`https://api.ip2country.info/ip?${input}`);
     const { countryCode, countryCode3, countryName, countryEmoji } = await ip2CountryOutput.json();
     const restCountriesOutput = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}`); 
@@ -29,7 +30,7 @@ router.get('/getDataTest/:ip', async (req, res) => {
     result.setDateTimes(restCountriesData.timezones);
     result.distanceToBA = geolib.getDistance(requestCoordinates, localCoordinates)/1000;
 
-    res.send(result);
+    res.status(200).send(result);
 });
 
 module.exports = router;
