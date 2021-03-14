@@ -6,7 +6,6 @@ router.get('/', (req, res) => res.render('geo'));
 
 router.post('/', async (req, res) => {
     const sections = [req.body['section_1'], req.body['section_2'], req.body['section_3'], req.body['section_4']];
-    let errors = [];
     let ip = '';
 
     for (let i = 0; i < sections.length; i++) {

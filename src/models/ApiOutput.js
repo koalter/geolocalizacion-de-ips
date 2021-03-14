@@ -1,6 +1,7 @@
 const { DateTime } = require('luxon');
+const GeolocalizationData = require('./GeolocalizationData');
 
-class ApiData {
+class ApiOutput {
     ipAddress = '';
     countryName = '';
     countryISO = '';
@@ -39,6 +40,22 @@ class ApiData {
             this.exchangeRate = null;
         }
     }
+
+    /**
+     * Exports the ApiOutput data into a new GeolocalizationData object.
+     */
+    export() {
+        return new GeolocalizationData({ 
+            ipAddress: this.ipAddress,
+            countryName: this.countryName,
+            countryISO: this.countryISO,
+            languages: this.languages,
+            currentDttm: this.currentDttm,
+            currency: this.currency,
+            distanceToBA: this.distanceToBA,
+            exchangeRate: this.exchangeRate
+        });
+    }
 }
 
-module.exports = ApiData;
+module.exports = ApiOutput;
