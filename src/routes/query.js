@@ -36,6 +36,19 @@ router.get('/shortest', async (req, res) => {
 });
 router.get('/average', async (req, res) => {
     const result = await fetch(`${req.protocol}://${req.get('host')}/api/getAverage`);
+    let output = null;
+    if (result.status === 200) {
+        output = await result.json();
+        console.log(output);
+    }
+
+    const options = {
+        status: result.status,
+        output: output
+    }
+    
+    console.log(options.output);
+    res.status(result.status).render('queries', options);
 });
 
 module.exports = router;

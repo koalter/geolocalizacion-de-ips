@@ -1,0 +1,21 @@
+<% if (typeof output != 'undefined' && output && status == '200') { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <table>
+          <thead>
+              <th>Country</th>
+              <th>Distance</th>
+              <th>Requests</th>
+          </thead>
+          <tbody>
+            <% for (const country in output) { %>
+                <tr><%= country %></tr>
+                <tr><%= output[country].distanceToBA %> KM</tr>
+                <tr><%= output[country].amount %></tr>
+            <% } %>
+          </tbody>
+      </table>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+<% } %>

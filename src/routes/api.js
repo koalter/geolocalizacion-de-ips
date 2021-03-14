@@ -47,6 +47,7 @@ router.get('/getShortest', async (req, res) => {
 
 router.get('/getAverage', async (req, res) => {
     const result = await apiService.getAverageDistance();
+    res.send(result);
 });
 
 function validateIp(input) {
