@@ -1,18 +1,24 @@
 <% if (typeof output != 'undefined' && output && status == '200') { %>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <table>
-          <thead>
+      <% if (output.averageDistance) { %>
+        <div>
+          <label>Average distance between all requests:</label>
+          <p><%= output.averageDistance %> KM</p>
+        </div>
+      <% } %>
+      <table class="col-md-12">
+          <tr>
               <th>Country</th>
               <th>Distance</th>
               <th>Requests</th>
-          </thead>
-          <tbody>
-            <% for (const country in output) { %>
-                <tr><%= country %></tr>
-                <tr><%= output[country].distanceToBA %> KM</tr>
-                <tr><%= output[country].amount %></tr>
-            <% } %>
-          </tbody>
+          </tr>
+          <% for (const country in output.countries) { %>
+            <tr>
+              <td><%= country %></td>
+              <td><%= output.countries[country].distanceToBA %> KM</td>
+              <td><%= output.countries[country].amount %></td>
+            </tr>
+          <% } %>
       </table>
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>

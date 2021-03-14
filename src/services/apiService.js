@@ -42,31 +42,38 @@ class ApiService {
 
     async getLongestDistance() {
         const results = await GeolocalizationData.find().sort('-distanceToBA');
-        let filteredResults = [];
+        let filteredResults = {};
         results.forEach(r => {
             if (r.countryName === results[0].countryName) {
-                filteredResults.push(r);
+                if (!filteredResults[r.countryName]) {
+                    filteredResults[r.countryName] = { distanceToBA: r.distanceToBA, amount: 1 };
+                } else {
+                    filteredResults[r.countryName].amount++;
+                }
             }
         });
-        const resultOutput = this.getQueryResults(filteredResults[0], filteredResults.length);
-        return resultOutput;
+        // const resultOutput = this.getQueryResults(filteredResults[0], filteredResults.length);
+        return { countries: filteredResults };
     }
 
     async getShortestDistance() {
         const results = await GeolocalizationData.find().sort('distanceToBA');
-        let filteredResults = [];
+        let filteredResults = {};
         results.forEach(r => {
             if (r.countryName === results[0].countryName) {
-                filteredResults.push(r);
+                if (!filteredResults[r.countryName]) {
+                    filteredResults[r.countryName] = { distanceToBA: r.distanceToBA, amount: 1 };
+                } else {
+                    filteredResults[r.countryName].amount++;
+                }
             }
         });
-        const resultOutput = this.getQueryResults(filteredResults[0], filteredResults.length);
-        return resultOutput;
+        // const resultOutput = this.getQueryResults(filteredResults[0], filteredResults.length);
+        return { countries: filteredResults };
     }
 
     async getAverageDistance() {
         const results = await GeolocalizationData.find();
-        console.log(results);
         if (!results) return null;
 
         let filteredResults = {};
@@ -81,16 +88,18 @@ class ApiService {
 
         let resultOutput = 0;
         let totalRequests = 0;
-        console.log(filteredResults);
+
         for (const country in filteredResults) {
-            console.log(filteredResults[country]);
             resultOutput += (filteredResults[country].distanceToBA * filteredResults[country].amount);
             totalRequests += filteredResults[country].amount;
         }
 
         if (resultOutput === 0 || totalRequests === 0) return null;
 
-        return { averageDistance: resultOutput / totalRequests }
+        return { 
+            countries: filteredResults,
+            averageDistance: resultOutput / totalRequests 
+        }
     }
 
     getQueryResults(geolocalizationData, amount) {

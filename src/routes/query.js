@@ -31,7 +31,7 @@ router.get('/shortest', async (req, res) => {
         status: result.status,
         output: output
     }
-    
+    console.log(options.output);
     res.status(result.status).render('queries', options);
 });
 router.get('/average', async (req, res) => {
@@ -47,7 +47,6 @@ router.get('/average', async (req, res) => {
         output: output
     }
     
-    console.log(options.output);
     res.status(result.status).render('queries', options);
 });
 
