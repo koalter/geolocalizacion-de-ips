@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const geolib = require('geolib');
 const apiService = require('../services/apiService');
-const EXCHANGE_RATES = require('../models/exchangeRate-mock.json'); //TODO delete after doing cache
 
 router.get('/getData/:ip', async (req, res) => {
     const input = req.params.ip;
@@ -18,13 +17,11 @@ router.get('/getData/:ip', async (req, res) => {
             if (countryData.status !== 200) {
                 res.sendStatus(countryData.status);
             } else {
-                const exchangeRates = apiService.getExchangeRateDataMock(countryData.currency);
+                const exchangeRates = await apiService.getExchangeRateData(countryData.currency);
             
                 const requestCoordinates = { latitude: countryData.latitude, longitude: countryData.longitude };
                 const localCoordinates = { latitude: process.env.LOCAL_LAT, longitude: process.env.LOCAL_LNG};
             
-                console.log(exchangeRates.usdRate);
-                console.log(exchangeRates.foreignRate);
                 const { result, status } = await apiService.saveData(input, countryName, countryCode, countryData.languages, countryData.currency, exchangeRates.usdRate, exchangeRates.foreignRate, countryData.timezones, Math.round(geolib.getDistance(requestCoordinates, localCoordinates)/1000));
 
                 res.status(status).send(result);

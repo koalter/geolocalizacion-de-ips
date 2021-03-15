@@ -4,7 +4,7 @@ const ApiOutput = require('../models/ApiOutput');
 const GeolocalizationData = require('../models/GeolocalizationData');
 const Cache = require('../models/Cache');
 const exchangeRateService = require('../services/exchangeRateService');
-const EXCHANGE_RATES = require('../models/exchangeRate-mock.json'); //TODO delete after doing cache
+const EXCHANGE_RATES = require('../resources/exchangeRate-mock.json'); // For testing purposes
 
 class ApiService {
 
@@ -13,7 +13,13 @@ class ApiService {
     constructor() {
         this.cache = new Cache();
         GeolocalizationData.find()
-            .then(g => this.cache.geolocalizationDataList = g);
+            .then(dataList => {
+                dataList.forEach(data => {
+                    const output = new ApiOutput();
+                    output.import(data);
+                    this.cache.geolocalizationDataList.push(output);
+                });
+            });
         exchangeRateService.getExchangeRates(DateTime.now().toFormat('yyyy-MM-dd'))
             .then(r => this.cache.exchangeRates = r);
     }
@@ -53,15 +59,24 @@ class ApiService {
     }
 
     async getExchangeRateData(currency) {
-        const exchangeRateData = await fetch(`http://data.fixer.io/api/latest?access_key=${process.env.FIXIO_API_KEY}`);
+        const dataFromCache = this.cache.exchangeRates;
         let usdRate = 0;
         let foreignRate = 0;
-        let status = exchangeRateData.status;
+        let status = 200;
+        if (!dataFromCache) {
 
-        if (status === 200) {
-            const exchangeRateDataJson = await exchangeRateData.json();
-            usdRate = exchangeRateDataJson.rates['USD'];
-            foreignRate = exchangeRateDataJson.rates[currency];
+            const exchangeRateData = await fetch(`http://data.fixer.io/api/latest?access_key=${process.env.FIXIO_API_KEY}`);
+            status = exchangeRateData.status;
+            if (status === 200) {
+                const exchangeRateDataJson = await exchangeRateData.json();
+                usdRate = exchangeRateDataJson.rates['USD'];
+                foreignRate = exchangeRateDataJson.rates[currency];
+                this.cache.exchangeRates = exchangeRateDataJson;
+                exchangeRateService.saveExchangeRate(exchangeRateDataJson);
+            }
+        } else {
+            usdRate = dataFromCache.rates['USD'];
+            foreignRate = dataFromCache.rates[currency];
         }
 
         return { usdRate, foreignRate, status };
@@ -92,6 +107,7 @@ class ApiService {
         await geolocalizationData.save()
             .then(data => {
                 status = 200;
+                this.cache.geolocalizationDataList.push(result);
             })
             .catch(err => status = 500);
 

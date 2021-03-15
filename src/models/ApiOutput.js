@@ -56,6 +56,20 @@ class ApiOutput {
             exchangeRate: this.exchangeRate
         });
     }
+
+    /**
+     * Imports the dbo into the ApiOutput object.
+     */
+    import(geolocalizationData) {
+        this.ipAddress = geolocalizationData.ipAddress;
+        this.countryName = geolocalizationData.countryName;
+        this.countryISO = geolocalizationData.countryISO;
+        this.languages = geolocalizationData.languages;
+        this.currentDttm = geolocalizationData.currentDttm;
+        this.currency = geolocalizationData.currency;
+        this.distanceToBA = geolocalizationData.distanceToBA;
+        this.exchangeRate = geolocalizationData.exchangeRate;
+    }
 }
 
 module.exports = ApiOutput;
