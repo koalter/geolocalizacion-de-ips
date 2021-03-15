@@ -4,9 +4,9 @@ const geolib = require('geolib');
 const apiService = require('../services/apiService');
 
 router.get('/getData/:ip', async (req, res) => {
-    const input = req.params.ip;
+    const input = sanitizeIp(req.params.ip);
 
-    if (!validateIp(input)) {
+    if (!input) {
         res.sendStatus(400);
     } else {
         const { countryCode, countryName, status } = await apiService.getIpData(input);
@@ -45,15 +45,19 @@ router.get('/getAverage', async (req, res) => {
     res.send(result);
 });
 
-function validateIp(input) {
+function sanitizeIp(input) {
     const sections = input.split('.');
+    let newString = '';
 
     for (let i = 0; i < sections.length; i++) {
         const intSection = parseInt(sections[i]);
         if (isNaN(intSection) || intSection > 255 || intSection < 0)
-            return false;
+            return null;
+        newString += intSection.toString();
+        if (i < sections.length - 1) 
+            newString += '.';
     }
-    return true;
+    return newString;
 }
 
 module.exports = router;
