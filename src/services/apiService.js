@@ -1,5 +1,6 @@
 const fetch = require('node-fetch').default;
 const { DateTime } = require('luxon');
+const geolib = require('geolib');
 const ApiOutput = require('../models/ApiOutput');
 const GeolocalizationData = require('../models/GeolocalizationData');
 const Cache = require('../models/Cache');
@@ -25,37 +26,85 @@ class ApiService {
     }
 
     async getIpData(ip) {
-        const ipData = await fetch(`https://api.ip2country.info/ip?${ip}`);
+        const ipFromCache = this.cache.geolocalizationDataList.find(g => g.ipAddress === ip);
         let countryCode = '';
         let countryName = '';
-        let status = ipData.status;
-        if (status === 200) {
-            const ipDataJson = await ipData.json();
-            countryCode = ipDataJson.countryCode;
-            countryName = ipDataJson.countryName;
+        let status = 200;
+
+        if (!ipFromCache) {
+            const ipData = await fetch(`https://api.ip2country.info/ip?${ip}`);
+            status = ipData.status;
+            if (status === 200) {
+                const ipDataJson = await ipData.json();
+                countryCode = ipDataJson.countryCode;
+                countryName = ipDataJson.countryName;
+            }
+        } else {
+            countryCode = ipFromCache.countryISO;
+            countryName = ipFromCache.countryName;
         }
+
         return { countryCode, countryName, status };
     }
 
     async getCountryData(countryCode) {
-        const countryData = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}`);
-        let latitude = 0;
-        let longitude = 0;
+        const countryDataFromCache = this.cache.geolocalizationDataList.find(g => g.countryISO === countryCode);
+        let distanceToBA = 0;
         let languages = [];
         let currency = '';
-        let timezones = [];
-        let status = countryData.status;
+        let currentDttm = [];
+        let status = 200;
+        
+        if (!countryDataFromCache) {
+            const countryData = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}`);
+            status = countryData.status;
+            if (status === 200) {
+                const countryDataJson = await countryData.json();
 
-        if (status === 200) {
-            const countryDataJson = await countryData.json();
-            latitude = countryDataJson.latlng[0];
-            longitude = countryDataJson.latlng[1];
-            languages = countryDataJson.languages;
-            currency = countryDataJson.currencies[0].code;
-            timezones = countryDataJson.timezones;
+                const requestCoordinates = {
+                    latitude: countryDataJson.latlng[0],
+                    longitude: countryDataJson.latlng[1]
+                }
+                const localCoordinates = {
+                    latitude: process.env.LOCAL_LAT,
+                    longitude: process.env.LOCAL_LNG
+                }
+                languages = countryDataJson.languages;
+                currency = countryDataJson.currencies[0].code;
+                distanceToBA = this.calculateDistance(requestCoordinates, localCoordinates);
+                currentDttm = this.calculateDateTimes(countryDataJson.timezones);
+            }
+        } else {
+            distanceToBA = countryDataFromCache.distanceToBA;
+            languages = countryDataFromCache.languages;
+            currency = countryDataFromCache.currency;
+            currentDttm = countryDataFromCache.currentDttm;
         }
         
-        return { latitude, longitude, languages, currency, timezones, status };
+        return { languages, currency, currentDttm, distanceToBA, status };
+    }
+
+    calculateDistance(requestCoordinates, localCoordinates) {
+        return Math.round(geolib.getDistance(requestCoordinates, localCoordinates)/1000);
+    }
+
+    calculateDateTimes(timezones) {
+        let dateTimes = [];
+
+        timezones.forEach(tz => {
+            dateTimes.push(DateTime.now().setZone(tz).toLocaleString({ 
+                locale: 'en-US', 
+                day: 'numeric', 
+                month: '2-digit', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: true
+            }));
+        });
+
+        return dateTimes;
     }
 
     async getExchangeRateData(currency) {
@@ -89,7 +138,7 @@ class ApiService {
         return { usdRate, foreignRate, status };
     }
 
-    async saveData(ipAddress, countryName, countryCode, languages, currencyCd, usdRate, countryRate, timezones, distanceInKm) {
+    async saveData(ipAddress, countryName, countryCode, languages, currencyCd, usdRate, countryRate, currentDttm, distanceInKm) {
         const result = new ApiOutput();
         let status = 200;
 
@@ -99,7 +148,7 @@ class ApiService {
         result.setLanguages(languages);
         result.currency = currencyCd;
         result.setExchangeRate(usdRate, countryRate);
-        result.setDateTimes(timezones);
+        result.currentDttm = currentDttm;
         result.distanceToBA = distanceInKm;
     
         const geolocalizationData = result.export();

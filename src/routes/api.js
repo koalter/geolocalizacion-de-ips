@@ -9,20 +9,17 @@ router.get('/getData/:ip', async (req, res) => {
     if (!input) {
         res.sendStatus(400);
     } else {
-        const { countryCode, countryName, status } = await apiService.getIpData(input);
-        if (status !== 200) {
-            res.sendStatus(status);
+        const ipData = await apiService.getIpData(input);
+        if (ipData.status !== 200) {
+            res.sendStatus(ipData.status);
         } else {
-            const countryData = await apiService.getCountryData(countryCode);
+            const countryData = await apiService.getCountryData(ipData.countryCode);
             if (countryData.status !== 200) {
                 res.sendStatus(countryData.status);
             } else {
                 const exchangeRates = await apiService.getExchangeRateData(countryData.currency);
             
-                const requestCoordinates = { latitude: countryData.latitude, longitude: countryData.longitude };
-                const localCoordinates = { latitude: process.env.LOCAL_LAT, longitude: process.env.LOCAL_LNG};
-            
-                const { result, status } = await apiService.saveData(input, countryName, countryCode, countryData.languages, countryData.currency, exchangeRates.usdRate, exchangeRates.foreignRate, countryData.timezones, Math.round(geolib.getDistance(requestCoordinates, localCoordinates)/1000));
+                const { result, status } = await apiService.saveData(input, ipData.countryName, ipData.countryCode, countryData.languages, countryData.currency, exchangeRates.usdRate, exchangeRates.foreignRate, countryData.currentDttm, countryData.distanceToBA);
 
                 res.status(status).send(result);
             }

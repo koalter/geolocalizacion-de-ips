@@ -11,6 +11,7 @@ class ApiOutput {
     distanceToBA = 0;
     exchangeRate = 0;
 
+    /** Possibly deprecated */
     setDateTimes(timezones) {
         timezones.forEach(tz => {
             this.currentDttm.push(DateTime.now().setZone(tz).toLocaleString({ 
