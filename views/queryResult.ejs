@@ -3,7 +3,7 @@
       <% if (output.averageDistance) { %>
         <div>
           <label>Average distance between all requests:</label>
-          <p><%= output.averageDistance %> KM</p>
+          <p><%= parseInt(output.averageDistance) %> KM</p>
         </div>
       <% } %>
       <table class="col-md-12">
@@ -15,7 +15,7 @@
           <% for (const country in output.countries) { %>
             <tr>
               <td><%= country %></td>
-              <td><%= output.countries[country].distanceToBA %> KM</td>
+              <td><%= parseInt(output.countries[country].distanceToBA) %> KM</td>
               <td><%= output.countries[country].amount %></td>
             </tr>
           <% } %>
