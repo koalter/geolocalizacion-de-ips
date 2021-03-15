@@ -32,7 +32,7 @@
         <% } %>
       </div>
     <% } %>
-    <% if (output.currency) { %>
+    <% if (output.currency && output.exchangeRate) { %>
       <div>
         <label>Currency:</label>
         <%= output.currency %> (1 USD = <%= output.exchangeRate.toFixed(2) %> <%= output.currency %>)

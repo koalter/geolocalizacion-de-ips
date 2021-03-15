@@ -9,7 +9,6 @@ router.get('/longest', async (req, res) => {
     let output = null;
     if (result.status === 200) {
         output = await result.json();
-        console.log(output);
     }
 
     const options = {
@@ -24,7 +23,6 @@ router.get('/shortest', async (req, res) => {
     let output = null;
     if (result.status === 200) {
         output = await result.json();
-        console.log(output);
     }
 
     const options = {
@@ -39,7 +37,6 @@ router.get('/average', async (req, res) => {
     let output = null;
     if (result.status === 200) {
         output = await result.json();
-        console.log(output);
     }
 
     const options = {

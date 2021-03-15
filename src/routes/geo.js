@@ -9,7 +9,6 @@ router.post('/', async (req, res) => {
     let output = null;
     if (result.status === 200) {
         output = await result.json();
-        console.log(output);
     }
     
     const options = {
