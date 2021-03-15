@@ -3,13 +3,13 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const expressLayouts = require('express-ejs-layouts');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 const apiRouter = require('./routes/api');
 const geoRouter = require('./routes/geo');
 const queryRouter = require('./routes/query');
 
 // Database
-mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://mongo/mydatabase', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Database connected...'))
     .catch(err => console.log(err));
 

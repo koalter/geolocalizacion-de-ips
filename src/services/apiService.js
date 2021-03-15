@@ -66,8 +66,8 @@ class ApiService {
                     longitude: countryDataJson.latlng[1]
                 }
                 const localCoordinates = {
-                    latitude: process.env.LOCAL_LAT,
-                    longitude: process.env.LOCAL_LNG
+                    latitude: -34.5474386,
+                    longitude: -58.4867773
                 }
                 languages = countryDataJson.languages;
                 currency = countryDataJson.currencies[0].code;
@@ -114,7 +114,7 @@ class ApiService {
         let status = 200;
         if (!dataFromCache) {
 
-            const exchangeRateData = await fetch(`http://data.fixer.io/api/latest?access_key=${process.env.FIXIO_API_KEY}`);
+            const exchangeRateData = await fetch(`http://data.fixer.io/api/latest?access_key=7aa700d4c100e08a7224856c29f037ba`);
             status = exchangeRateData.status;
             if (status === 200) {
                 const exchangeRateDataJson = await exchangeRateData.json();
