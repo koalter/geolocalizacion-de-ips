@@ -1,0 +1,17 @@
+<div class="row mt-5">
+    <div class="col-md-6 m-auto">
+        <div class="card card-body">
+            <h1 class="text-center mb-3">Queries</h1>
+            <form action="/queries/longest" method="GET">
+            <button type="submit" class="btn btn-primary btn-block">Longest distance requested</button>
+            </form><br>
+            <form action="/queries/shortest" method="GET">
+                <button type="submit" class="btn btn-primary btn-block">Shortest distance requested</button>
+            </form><br>
+            <form action="/queries/average" method="GET">
+                <button type="submit" class="btn btn-primary btn-block">Average distance requested</button>
+            </form>
+        </div>
+        <%- include("./queryResult"); %>
+    </div>
+</div>
